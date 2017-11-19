@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  db:
+    image: tobi312/rpi-mysql 
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=bookingdb
+      - MYSQL_USER=bookingdbuser
+      - MYSQL_PASSWORD=password
+    volumes:
+      - mysql:/var/lib/mysql
+  web:
+    build: .
+    command: python3 manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+volumes:
+  mysql:

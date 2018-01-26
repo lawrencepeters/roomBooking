@@ -1,0 +1,21 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<table style="width:100%">
+    <tr>
+        <th>Room</th>
+        {% for period in periods %}
+            <th>{{ period.periodName }}</th>
+        {% endfor %}
+    </tr>
+
+    {% for room in rooms %}
+        <tr>
+            <td>{{ room.roomName }}</td>
+        </tr>
+    {% endfor %}
+
+</table>
+
+{% endblock %}

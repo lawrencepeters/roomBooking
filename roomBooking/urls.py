@@ -20,3 +20,8 @@ urlpatterns = [
     url(r'^booking/', include('booking.urls')),
     url(r'^admin/', admin.site.urls),
 ]
+
+#Add Django site authentication urls (for login, logout, password management)
+urlpatterns += [
+    url('accounts/', include('django.contrib.auth.urls')),
+]

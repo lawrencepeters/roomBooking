@@ -1,0 +1,77 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="panel panel-default">
+  <div class="panel-heading"><h1 class="text-center">Book a Room</h1></div>
+  <div class="panel-body">
+    <form method="POST">
+        
+        <div class="row">
+            <div class="col-xs-4"><h4 class="text-center">Required Date</h4></div>
+            <div class="col-xs-4"><h4 class="text-center">Required Period</h4></div>
+            <div class="col-xs-4"><h4 class="text-center">Room</h4></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-4 text-center" ><input type="text" name="bookingdate"/></div>
+            <div class="col-xs-4 text-center"><select name="periods">
+                {% for period in periods %}
+                    <option value="{{ period.periodID }}">{{ period.periodName }}</option>
+                {% endfor %}
+                </select></div>
+            <div class="col-xs-4 text-center"><select name="roomName">
+                {% for room in rooms %}
+                    <option value="{{ room.roomID }}">{{ room.roomName }}</option>
+                {% endfor %}
+                </select></div>
+        </div>
+                
+        <div class="row">
+            <div class="col-xs-12">
+                <h2 class="text-center">Select Room Features</h2>
+            </div>
+        </div>
+    
+        <div class="checkbox">
+            <div class="row">        
+                <div class="col-xs-3 text-center"><label><input type="checkbox" value=""> Option 1 </label></div>
+                <div class="col-xs-3 text-center"><label><input type="checkbox" value=""> Option 2 </label></div>
+                <div class="col-xs-3 text-center"><label><input type="checkbox" value=""> Option 3 </label></div>
+                <div class="col-xs-3 text-center"><label><input type="checkbox" value=""> Option 4 </label></div>
+            </div>
+            <div class="row">        
+                <div class="col-xs-3 text-center"><label><input type="checkbox" value=""> Option 5 </label></div>
+                <div class="col-xs-3 text-center"><label><input type="checkbox" value=""> Option 6 </label></div>
+                <div class="col-xs-3 text-center"><label><input type="checkbox" value=""> Option 7 </label></div>
+                <div class="col-xs-3 text-center"><label><input type="checkbox" value=""> Option 8 </label></div>
+            </div>
+        </div>
+</div>
+        <div class="panel-footer">
+
+        <div class="row">
+            <div class="col-xs-6 text-center"><a class="btn btn-default" href="find" role="button">Find a Room</a></div>
+            <div class="col-xs-6 text-center"><a class="btn btn-default" href="viewbookings" role="button">View Bookings</a></div>
+        </div>
+        </div>
+    </form>
+
+</div>
+</div>
+
+<script type="text/javascript">
+    $(function() 
+    {
+        $('input[name="bookingdate"]').daterangepicker(
+        {
+            locale: 
+            {
+                format: 'DD/MM/YYYY'
+            },
+            singleDatePicker: true,
+            showDropdowns: true
+        });
+    });
+</script>
+{% endblock %}

@@ -32,9 +32,12 @@ def viewbookings(request):
     ) 
 
 def find(request):
+    bookingDate = request.POST['bookingdate']
+    
+    selectedRooms = roomInfo.objects.filter(roomID=request.POST['roomName'])
 
     return render(
         request,
         'find.html',
-        context={},
+        context={'bookingDates': bookingDate, 'selectedRooms': selectedRooms},
     ) 

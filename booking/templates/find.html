@@ -2,20 +2,22 @@
 
 {% block content %}
 
+{{ bookingDates }}
+
 <table style="width:100%">
     <tr>
         <th>Room</th>
-        {% for period in periods %}
-            <th>{{ period.periodName }}</th>
+        <th>Period</th>
+        <th>Date</th>
+        {% for feature in features %}
+            <th>{{ feature.facilityName }}</th>
         {% endfor %}
     </tr>
-
-    {% for room in rooms %}
+        {% for room in selectedRooms %}
         <tr>
             <td>{{ room.roomName }}</td>
         </tr>
     {% endfor %}
-
 </table>
 
 {% endblock %}

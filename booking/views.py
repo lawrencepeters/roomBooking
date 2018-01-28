@@ -1,4 +1,6 @@
 from django.shortcuts import render
+import datetime
+import pprint
 
 # Create your views here.
 
@@ -32,9 +34,17 @@ def viewbookings(request):
     ) 
 
 def find(request):
-    bookingDate = request.POST['bookingdate']
-    
-    selectedRooms = roomInfo.objects.filter(roomID=request.POST['roomName'])
+
+    bookingDate = datetime.datetime.strptime(request.POST['bookingdate'], "%d/%m/%Y").strftime("%Y-%m-%d")
+
+    bookedRooms = bookingRecord.objects.filter(date = bookingDate).values('roomID')
+
+    pprint.pprint(bookedRooms)
+
+    selectedRooms = roomInfo.objects.exclude(roomID__in=[o['roomID'] for o in bookedRooms])
+    #for room in selectedRooms:
+        #if booking is not None:
+        #   selectedRooms.exclude(room)
 
     return render(
         request,

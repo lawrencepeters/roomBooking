@@ -35,19 +35,34 @@ def viewbookings(request):
 
 def find(request):
 
-    bookingDate = datetime.datetime.strptime(request.POST['bookingdate'], "%d/%m/%Y").strftime("%Y-%m-%d")
+    bookingDate = ''
+    if 'bookDate' in request.GET:
+        bookingDate = request.GET['bookDate']
+        period = periods.objects.filter(periodID = request.GET['periodID']).get()
+        room = roomInfo.objects.filter(roomID = request.GET['roomID']).get()
+        b = bookingRecord(date = bookingDate, roomID = room, periodID = period)
+        b.save()
+    else:
+        bookingDate = datetime.datetime.strptime(request.POST['bookingdate'], "%d/%m/%Y").strftime("%Y-%m-%d")
+ 
+    bookedRooms = bookingRecord.objects.filter(date = bookingDate).values('roomID', 'periodID')
 
-    bookedRooms = bookingRecord.objects.filter(date = bookingDate).values('roomID')
+    displaydate = bookingDate[8:] + "/" + bookingDate[5:-3] + "/" + bookingDate[:4]
 
-    pprint.pprint(bookedRooms)
+    allRooms = []
+    for room in roomInfo.objects.all():
+        allPeriods = []
+        for period in periods.objects.all(): 
+            isBooked = bookedRooms.filter(roomID = room).filter(periodID = period).count()
+            allPeriods.append({"period": period, "isBooked": isBooked})
+        allRooms.append({"room": room, "periods": allPeriods})
+
+    pprint.pprint(allRooms)
 
     selectedRooms = roomInfo.objects.exclude(roomID__in=[o['roomID'] for o in bookedRooms])
-    #for room in selectedRooms:
-        #if booking is not None:
-        #   selectedRooms.exclude(room)
 
     return render(
         request,
         'find.html',
-        context={'bookingDates': bookingDate, 'selectedRooms': selectedRooms},
-    ) 
+        context={'bookingDate': bookingDate, 'allRooms': allRooms, 'periods': periods.objects.all(), 'displaydate': displaydate}
+        ) 

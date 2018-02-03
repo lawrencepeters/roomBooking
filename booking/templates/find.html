@@ -2,22 +2,36 @@
 
 {% block content %}
 
-{{ bookingDates }}
-
-<table style="width:100%">
+<div class="container-fluid">
+  <div class="panel panel-default">
+  <div class="panel-heading"><h2 class="text-center">{{ displaydate }}</h2></div>
+  <div class="panel-body">
+   
+<table class="table" style="width:100%">
     <tr>
         <th>Room</th>
-        <th>Period</th>
-        <th>Date</th>
-        {% for feature in features %}
-            <th>{{ feature.facilityName }}</th>
+        {% for period in periods %}
+            <th>{{ period.periodName }}</th>
         {% endfor %}
     </tr>
-        {% for room in selectedRooms %}
+        {% for r in allRooms %}
         <tr>
-            <td>{{ room.roomName }}</td>
+            <td>{{ r.room.roomName }}</td>
+            {% for p in r.periods %}
+                {% if p.isBooked > 0 %}
+                    <td><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></td>
+                {% else %}
+                    <td><a href="/booking/find?bookDate={{ bookingDate }}&roomID={{ r.room.roomID }}&periodID={{ p.period.periodID }}"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></a></td>
+                {% endif %}
+            {% endfor %}
         </tr>
     {% endfor %}
 </table>
+
+</div>
+        <div class="panel-footer">
+        </div>
+</div>
+</div>
 
 {% endblock %}

@@ -14,17 +14,25 @@
         </div>
 
         <div class="row">
-            <div class="col-xs-4 text-center" ><input type="text" name="bookingdate"/></div>
-            <div class="col-xs-4 text-center"><select name="periods">
-                {% for period in periods %}
-                    <option value="{{ period.periodID }}">{{ period.periodName }}</option>
-                {% endfor %}
-                </select></div>
-            <div class="col-xs-4 text-center"><select name="roomName">
-                {% for room in rooms %}
-                    <option value="{{ room.roomID }}">{{ room.roomName }}</option>
-                {% endfor %}
-                </select></div>
+            <div class="col-xs-4 text-center" >
+                <input type="text" name="bookingdate"/>
+            </div>
+            <div class="col-xs-4 text-center">
+                <select name="periods">
+                    <option value="any">Any</option>
+                    {% for period in periods %}
+                        <option value="{{ period.periodID }}">{{ period.periodName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-xs-4 text-center">
+                <select name="roomName">
+                    <option value="any">Any</option>
+                    {% for room in rooms %}
+                        <option value="{{ room.roomID }}">{{ room.roomName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
                 
         <div class="row">
@@ -35,17 +43,14 @@
     
         <div class="checkbox">
             <div class="row">        
-                <div class="col-xs-3 text-center"><label><input type="checkbox" value=""> Option 1 </label></div>
-                <div class="col-xs-3 text-center"><label><input type="checkbox" value=""> Option 2 </label></div>
-                <div class="col-xs-3 text-center"><label><input type="checkbox" value=""> Option 3 </label></div>
-                <div class="col-xs-3 text-center"><label><input type="checkbox" value=""> Option 4 </label></div>
-            </div>
-            <div class="row">        
-                <div class="col-xs-3 text-center"><label><input type="checkbox" value=""> Option 5 </label></div>
-                <div class="col-xs-3 text-center"><label><input type="checkbox" value=""> Option 6 </label></div>
-                <div class="col-xs-3 text-center"><label><input type="checkbox" value=""> Option 7 </label></div>
-                <div class="col-xs-3 text-center"><label><input type="checkbox" value=""> Option 8 </label></div>
-            </div>
+                {% for f in facilities %}
+                <div class="col-xs-3 text-center"><label><input type="checkbox" value="{{f.facilityID}}"> {{f.facilityName}} </label></div>
+                {% if forloop.counter % 4 == 0  %}
+                </div>
+                <div class="row">        
+                {% endif %}
+                {% endfor %}
+             </div>
         </div>
 </div>
         <div class="panel-footer">

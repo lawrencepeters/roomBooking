@@ -1,43 +1,52 @@
 from django.db import models
+from django.conf import settings
+from django.contrib.auth.models import User
 
 # Create your models here.
 
-class roomInfo(models.Model):
+class Room(models.Model):
     roomID = models.AutoField(primary_key=True, auto_created=True)
     roomName = models.CharField(max_length=50)
     roomDescription = models.CharField(max_length=200)
     roomCapacity = models.IntegerField()
 
-class facilities(models.Model):
+    def __str__(self):
+        return '%s - %s' % (self.roomName, self.roomDescription)
+
+class Facility(models.Model):
     facilityID = models.AutoField(primary_key=True, auto_created=True)
     facilityName = models.CharField(max_length=50)
     facilityDescription = models.CharField(max_length=200)
+    
+    def __str__(self):
+        return '%s - %s' % (self.facilityName, self.facilityDescription)
 
-class roomFacilities(models.Model):
+class RoomFacility(models.Model):
     roomFacilitiesID = models.AutoField(primary_key=True, auto_created=True)
-    roomID = models.ForeignKey(roomInfo)
-    facilityID = models.ForeignKey(facilities)
+    room = models.ForeignKey(Room)
+    facility = models.ForeignKey(Facility)
 
-class periods(models.Model):
+class Period(models.Model):
     periodID = models.AutoField(primary_key=True, auto_created=True)
     periodName = models.CharField(max_length=50)
     startTime = models.TimeField(auto_now=False)
     endTime = models.TimeField(auto_now=False)
 
-class roomAvailability(models.Model):
-    roomAvailabilityID = models.AutoField(primary_key=True, auto_created=True)
-    date = models.DateField(auto_now=False)
-    periodID = models.ForeignKey(periods)
+    def __str__(self):
+        return self.periodName
 
-class bookingRecord(models.Model):
-    bookingRecordID = models.AutoField(primary_key=True, auto_created=True)
+class Booking(models.Model):
+    bookingID = models.AutoField(primary_key=True, auto_created=True)
     date = models.DateField(auto_now=False)
-    periodID = models.ForeignKey(periods)
-    roomID = models.ForeignKey(roomInfo)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    period = models.ForeignKey(Period)
+    room = models.ForeignKey(Room)
+    timestamp = models.TimeField(auto_now_add=True)
 
-class bookingHistory(models.Model):
+class BookingHistory(models.Model):
     bookingHistoryID = models.AutoField(primary_key=True, auto_created=True)
     date = models.DateField(auto_now=False)
-    periodID = models.ForeignKey(periods)
-    roomID = models.ForeignKey(roomInfo)
+    user = User
+    period = Period
+    room = Room
     timestamp = models.TimeField(auto_now_add=True)

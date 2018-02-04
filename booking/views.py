@@ -1,68 +1,86 @@
 from django.shortcuts import render
 import datetime
 import pprint
+from django.contrib.auth.models import User
 
 # Create your views here.
 
-from .models import roomInfo, facilities, roomFacilities, periods, roomAvailability, bookingRecord, bookingHistory
+from .models import Room, Facility, RoomFacility, Period, Booking, BookingHistory
 def index(request):
     """
     View function for home page of site.
     """
-    room  = roomInfo.objects.all()
-    period  = periods.objects.all()
-    # Generate counts of some of the main objects
-    # num_roomAvailabilities=roomAvailability.objects.all().count()
-    # Available books (status = 'a')
-    # num_rooms_available=roomAvailability.objects.filter(status__exact='a').count()
+    rooms = Room.objects.all()
+    periods = Period.objects.all()
+    facilities = Facility.objects.all()
     
-    # Render the HTML template index.html with the data in the context variable
     return render(
         request,
         'index.html',
-        context={'rooms':room, 'periods':period},
+        context={'rooms':rooms, 'periods':periods, 'facilities':facilities},
     ) 
 
 def viewbookings(request):
-    room  = roomInfo.objects.all()
-    period  = periods.objects.all()
+    rooms  = Room.objects.all()
+    periods  = Period.objects.all()
+    bookingDate = datetime.datetime.now().strftime("%Y-%m-%d")
+    if request.method == 'POST':
+        bookingDate = datetime.datetime.strptime(request.POST['bookDate'], "%d/%m/%Y").strftime("%Y-%m-%d")
+
+    pprint.pprint(request.POST)
+
+    bookedRooms = Booking.objects.filter(date = bookingDate).values('room', 'period')
+
+    displaydate = bookingDate[8:] + "/" + bookingDate[5:-3] + "/" + bookingDate[:4]
+
+    allRooms = []
+    for room in Room.objects.all():
+        allPeriods = []
+        for period in Period.objects.all(): 
+            isBooked = bookedRooms.filter(room = room).filter(period = period).count()
+            allPeriods.append({"period": period, "isBooked": isBooked})
+        allRooms.append({"room": room, "periods": allPeriods})
 
     return render(
         request,
         'viewbookings.html',
-        context={'rooms':room, 'periods':period},
+        context={'bookingDate': bookingDate,
+                    'allRooms': allRooms,
+                    'periods': Period.objects.all(),
+                    'displaydate': displaydate},
     ) 
 
 def find(request):
 
     bookingDate = ''
-    if 'bookDate' in request.GET:
+    if request.method == 'GET':
         bookingDate = request.GET['bookDate']
-        period = periods.objects.filter(periodID = request.GET['periodID']).get()
-        room = roomInfo.objects.filter(roomID = request.GET['roomID']).get()
-        b = bookingRecord(date = bookingDate, roomID = room, periodID = period)
+        period = Period.objects.filter(periodID = request.GET['periodID']).get()
+        room = Room.objects.filter(roomID = request.GET['roomID']).get()
+        b = Booking(date = bookingDate, room = room, period = period, user = request.user)
         b.save()
     else:
         bookingDate = datetime.datetime.strptime(request.POST['bookingdate'], "%d/%m/%Y").strftime("%Y-%m-%d")
  
-    bookedRooms = bookingRecord.objects.filter(date = bookingDate).values('roomID', 'periodID')
+    bookedRooms = Booking.objects.filter(date = bookingDate).values('room', 'period')
 
     displaydate = bookingDate[8:] + "/" + bookingDate[5:-3] + "/" + bookingDate[:4]
 
     allRooms = []
-    for room in roomInfo.objects.all():
+    for room in Room.objects.all():
         allPeriods = []
-        for period in periods.objects.all(): 
-            isBooked = bookedRooms.filter(roomID = room).filter(periodID = period).count()
+        for period in Period.objects.all(): 
+            isBooked = bookedRooms.filter(room = room).filter(period = period).count()
             allPeriods.append({"period": period, "isBooked": isBooked})
         allRooms.append({"room": room, "periods": allPeriods})
 
     pprint.pprint(allRooms)
 
-    selectedRooms = roomInfo.objects.exclude(roomID__in=[o['roomID'] for o in bookedRooms])
-
     return render(
         request,
         'find.html',
-        context={'bookingDate': bookingDate, 'allRooms': allRooms, 'periods': periods.objects.all(), 'displaydate': displaydate}
+        context={'bookingDate': bookingDate,
+                    'allRooms': allRooms,
+                    'periods': Period.objects.all(),
+                    'displaydate': displaydate}
         ) 

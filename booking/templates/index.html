@@ -41,17 +41,24 @@
             </div>
         </div>
     
-        <div class="checkbox">
-            <div class="row">        
+            <div class="row">
+                <div class="col-xs-2"></div>
+                <div class="col-xs-9">
+                <div class="row">        
                 {% for f in facilities %}
-                <div class="col-xs-3 text-center"><label><input type="checkbox" value="{{f.facilityID}}"> {{f.facilityName}} </label></div>
-                {% if forloop.counter % 4 == 0  %}
+                <div class="col-xs-3 text-left">
+                    <div class="checkbox">
+                        <label><input type="checkbox" value="{{f.facilityID}}"> {{f.facilityName}} </label>
+                    </div>
+                </div>
+                {% if forloop.counter|divisibleby:4 %}
                 </div>
                 <div class="row">        
                 {% endif %}
-                {% endfor %}
-             </div>
-        </div>
+                {% endfor %}  
+            </div>
+            </div>
+            </div>
 </div>
         <div class="panel-footer">
 

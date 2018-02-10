@@ -84,3 +84,33 @@ def find(request):
                     'periods': Period.objects.all(),
                     'displaydate': displaydate}
         ) 
+
+def mybookings(request):
+    rooms  = Room.objects.all()
+    periods  = Period.objects.all()
+    bookingDate = datetime.datetime.now().strftime("%Y-%m-%d")
+    if request.method == 'POST':
+        bookingDate = datetime.datetime.strptime(request.POST['bookDate'], "%d/%m/%Y").strftime("%Y-%m-%d")
+
+    pprint.pprint(request.POST)
+
+    bookedRooms = Booking.objects.filter(date = bookingDate).values('room', 'period')
+
+    displaydate = bookingDate[8:] + "/" + bookingDate[5:-3] + "/" + bookingDate[:4]
+
+    allRooms = []
+    for room in Room.objects.all():
+        allPeriods = []
+        for period in Period.objects.all(): 
+            isBooked = bookedRooms.filter(room = room).filter(period = period).count()
+            allPeriods.append({"period": period, "isBooked": isBooked})
+        allRooms.append({"room": room, "periods": allPeriods})
+
+    return render(
+        request,
+        'mybookings.html',
+        context={'bookingDate': bookingDate,
+                    'allRooms': allRooms,
+                    'periods': Period.objects.all(),
+                    'displaydate': displaydate},
+    )

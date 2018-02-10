@@ -2,56 +2,21 @@
 
 {% block content %}
 
-<div class="container-fluid">
-    <div class="panel panel-default">
-    <div class="panel-heading">
-        <form id="dateForm" method="POST" action="mybookings"> {% csrf_token %}   
-            <div class="row">
-                <div class="col-xs-2 text-center">
-                    <input id="dp" type="text" name="bookDate" value="{{ displaydate }}" />
-                </div>
-            </div>
-        </form>
-    </div>
-    <div class="panel-body">
-        <table class="table" style="width:100%">
+    <h1>My Bookings</h1>
+
+    <table class="table" style="width:100%">
+        <tr>
+            <th>Date</th>
+            <th>Room</th>
+            <th>Period</th>
+        </tr>
+        {% for myBooking in myBookings %}
             <tr>
-                <th>Room</th>
-                {% for period in periods %}
-                    <th>{{ period.periodName }}</th>
-                {% endfor %}
+                <td>{{myBooking.bookDate }}</td> 
+                <td>{{myBooking.room}}</td>
+                <td>{{ myBooking.period }}</td> 
             </tr>
-                {% for r in allRooms %}
-                <tr>
-                    <td>{{ r.room.roomName }}</td>
-                    {% for p in r.periods %}
-                        {% if p.isBooked > 0 %}
-                            <td><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></td>
-                        {% else %}
-                            <td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></a></td>
-                        {% endif %}
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-        </table>
-    </div>
-    <div class="panel-footer">
-    </div>
-</div>
-</div>
+        {% endfor %}
+    </table>
 
-<script type="text/javascript">
-    $(document).ready(function()
-    {
-        $('#dp').datepicker(
-        {
-            format: 'dd/mm/yyyy'
-        });
-
-        $('#dp').change(function(e) {
-            document.getElementById("dateForm").submit();
-        });
-
-    });
-</script>
 {% endblock %}

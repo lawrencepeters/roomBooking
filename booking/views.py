@@ -3,6 +3,7 @@ import datetime
 import pprint
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 
 # Create your views here.
 
@@ -56,37 +57,54 @@ def viewbookings(request):
 @login_required
 def find(request):
 
-    bookingDate = ''
-    if request.method == 'GET':
-        bookingDate = request.GET['bookDate']
-        period = Period.objects.filter(periodID = request.GET['periodID']).get()
-        room = Room.objects.filter(roomID = request.GET['roomID']).get()
-        b = Booking(date = bookingDate, room = room, period = period, user = request.user)
-        b.save()
+    filterRooms = None
+    filterPeriods = None    
+
+    bookingDate = datetime.datetime.strptime(request.POST['bookingdate'], "%d/%m/%Y").strftime("%Y-%m-%d")
+    requestedRoom = request.POST['roomName']
+    requestedPeriod = request.POST['periods']
+    if 'facilities' in request.POST:
+        requestedFacilities = request.POST['facilities'] 
+        pprint.pprint(requestedFacilities)
+
+    if requestedRoom == 'any':
+        filterRooms = Room.objects.all()
     else:
-        bookingDate = datetime.datetime.strptime(request.POST['bookingdate'], "%d/%m/%Y").strftime("%Y-%m-%d")
- 
+        filterRooms = Room.objects.filter(roomID = requestedRoom)
+
+    if requestedPeriod == 'any':
+        filterPeriods = Period.objects.all()
+    else:
+        filterPeriods = Period.objects.filter(periodID = requestedPeriod)
+
     bookedRooms = Booking.objects.filter(date = bookingDate).values('room', 'period')
 
     displaydate = bookingDate[8:] + "/" + bookingDate[5:-3] + "/" + bookingDate[:4]
 
-    allRooms = []
-    for room in Room.objects.all():
+    findRooms = []
+    for room in filterRooms:
         allPeriods = []
-        for period in Period.objects.all(): 
+        for period in filterPeriods:
             isBooked = bookedRooms.filter(room = room).filter(period = period).count()
-            allPeriods.append({"period": period, "isBooked": isBooked})
-        allRooms.append({"room": room, "periods": allPeriods})
+            facilities = []
+            roomFacilities = RoomFacility.objects.filter(room = room)
+            for roomFacility in roomFacilities:
+                fac = Facility.objects.filter(facilityID = roomFacility.facility_id)[:1].get()
+                facilities.append(fac)
 
-    pprint.pprint(allRooms)
+            findRooms.append({"bookDate": displaydate,
+                                "room": room,
+                                "period": period,
+                                "isBooked": isBooked,
+                                "facilities": facilities})
 
     return render(
         request,
         'find.html',
-        context={'bookingDate': bookingDate,
-                    'allRooms': allRooms,
-                    'periods': Period.objects.all(),
-                    'displaydate': displaydate}
+        context={   'bookingDate': bookingDate,
+                    'displaydate': displaydate,
+                    'findRooms': findRooms
+                }
         ) 
 
 @login_required
@@ -107,3 +125,13 @@ def mybookings(request):
         'mybookings.html',
         context={'myBookings': myBookings}
     )
+
+@login_required
+def bookARoom(request):
+
+    bookingDate = request.POST['bookDate']
+    period = Period.objects.filter(periodID = request.POST['periodID']).get()
+    room = Room.objects.filter(roomID = request.POST['roomID']).get()
+    b = Booking(date = bookingDate, room = room, period = period, user = request.user)
+    b.save()
+    return HttpResponse()

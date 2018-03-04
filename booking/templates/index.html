@@ -8,8 +8,8 @@
     <form method="POST" action="find">{% csrf_token %}
         
         <div class="row">
-            <div class="col-xs-4"><h4 class="text-center">Required Date</h4></div>
-            <div class="col-xs-4"><h4 class="text-center">Required Period</h4></div>
+            <div class="col-xs-4"><h4 class="text-center">Date</h4></div>
+            <div class="col-xs-4"><h4 class="text-center">Period</h4></div>
             <div class="col-xs-4"><h4 class="text-center">Room</h4></div>
         </div>
 
@@ -48,7 +48,7 @@
                 {% for f in facilities %}
                 <div class="col-xs-3 text-left">
                     <div class="checkbox">
-                        <label><input type="checkbox" value="{{f.facilityID}}"> {{f.facilityName}} </label>
+                        <label><input type="checkbox" name="facilities" value="{{f.facilityID}}"> {{f.facilityName}} </label>
                     </div>
                 </div>
                 {% if forloop.counter|divisibleby:4 %}

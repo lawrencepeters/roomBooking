@@ -1,22 +1,27 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
+<div class="container-fluid">
+    <div class="panel panel-default">
+        <div class="panel-heading"><h1 class="text-center">My Bookings</h1></div>
+        <div class="panel-body">
 
-    <h1>My Bookings</h1>
-
-    <table class="table" style="width:100%">
-        <tr>
-            <th>Date</th>
-            <th>Room</th>
-            <th>Period</th>
-        </tr>
-        {% for myBooking in myBookings %}
-            <tr>
-                <td>{{myBooking.bookDate }}</td> 
-                <td>{{myBooking.room}}</td>
-                <td>{{ myBooking.period }}</td> 
-            </tr>
-        {% endfor %}
-    </table>
-
+            <table class="table" style="width:100%">
+                <tr>
+                    <th>Date</th>
+                    <th>Room</th>
+                    <th>Period</th>
+                </tr>
+                {% for myBooking in myBookings %}
+                    <tr>
+                        <td>{{myBooking.bookDate }}</td> 
+                        <td>{{myBooking.room}}</td>
+                        <td>{{ myBooking.period }}</td> 
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="panel-footer"></div>
+    </div>
+</div>
 {% endblock %}

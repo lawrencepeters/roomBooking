@@ -64,8 +64,9 @@ $.ajaxSetup({
             <a class="navbar-brand" href="{% url 'index' %}">Book</a>
           </div>
           <ul class="nav navbar-nav">
-            <li><a href="{% url 'viewbookings' %}">View Bookings</a></li>
+            <li><a href="{% url 'viewbookings' %}">Booking Availabilities</a></li>
             <li><a href="{% url 'mybookings' %}">My Bookings</a></li>
+            <li><a href="{% url 'bookHistory' %}">Booking History</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             {% if user.is_superuser %}

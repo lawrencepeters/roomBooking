@@ -133,10 +133,25 @@ def mybookings(request):
 
 @login_required
 def bookARoom(request):
+    pprint.pprint(request.POST)
 
     bookingDate = request.POST['bookDate']
     period = Period.objects.filter(periodID = request.POST['periodID']).get()
     room = Room.objects.filter(roomID = request.POST['roomID']).get()
     b = Booking(date = bookingDate, room = room, period = period, user = request.user)
     b.save()
+    bh = BookingHistory(date = bookingDate, roomName = room.roomName, periodName = period.periodName, username = request.user.username)
+    bh.save()
     return HttpResponse()
+
+@login_required
+def bookHistory(request):
+    bookHistory = BookingHistory.objects.values()
+
+    pprint.pprint(bookHistory)
+    
+    return render(
+        request,
+        'bookHistory.html',
+        context = {'bookHistory': bookHistory}
+    )

@@ -13,6 +13,7 @@
                 <th>Room</th>
                 <th>Period</th>
                 <th>Facilities</th>
+                <th>Facilities Match</th>
                 <th>Book<th>
             </tr>
             {% for findRoom in findRooms %}
@@ -25,6 +26,7 @@
                            <span class="label label-default">{{ facility.facilityName }}</span>
                         {% endfor %}    
                     </td> 
+                    <td>{{ findRoom.percentageMatch }}%</td>
                     {% if findRoom.isBooked > 0 %}
                         <td><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></td>
                     {% else %}

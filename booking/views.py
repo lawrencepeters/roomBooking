@@ -4,6 +4,7 @@ import pprint
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
+from operator import attrgetter
 
 # Create your views here.
 
@@ -30,8 +31,6 @@ def viewbookings(request):
     bookingDate = datetime.datetime.now().strftime("%Y-%m-%d")
     if request.method == 'POST':
         bookingDate = datetime.datetime.strptime(request.POST['bookDate'], "%d/%m/%Y").strftime("%Y-%m-%d")
-
-    pprint.pprint(request.POST)
 
     bookedRooms = Booking.objects.filter(date = bookingDate).values('room', 'period')
 
@@ -63,9 +62,7 @@ def find(request):
     bookingDate = datetime.datetime.strptime(request.POST['bookingdate'], "%d/%m/%Y").strftime("%Y-%m-%d")
     requestedRoom = request.POST['roomName']
     requestedPeriod = request.POST['periods']
-    if 'facilities' in request.POST:
-        requestedFacilities = request.POST['facilities'] 
-        pprint.pprint(requestedFacilities)
+    requestedFacilities = request.POST.getlist('facilities[]') 
 
     if requestedRoom == 'any':
         filterRooms = Room.objects.all()
@@ -84,26 +81,37 @@ def find(request):
     findRooms = []
     for room in filterRooms:
         allPeriods = []
+        facilities = []
+        facCount = 0
+        roomFacilities = RoomFacility.objects.filter(room = room)
+        for roomFacility in roomFacilities:
+            fac = Facility.objects.filter(facilityID = roomFacility.facility_id)[:1].get()
+            if str(roomFacility.facility_id) in requestedFacilities:
+                facCount += 1
+            facilities.append(fac)
         for period in filterPeriods:
             isBooked = bookedRooms.filter(room = room).filter(period = period).count()
-            facilities = []
-            roomFacilities = RoomFacility.objects.filter(room = room)
-            for roomFacility in roomFacilities:
-                fac = Facility.objects.filter(facilityID = roomFacility.facility_id)[:1].get()
-                facilities.append(fac)
+
+            percentageMatch = 0
+            if len(requestedFacilities) > 0:
+                percentageMatch = int((facCount/len(requestedFacilities))*100)
 
             findRooms.append({"bookDate": displaydate,
                                 "room": room,
                                 "period": period,
                                 "isBooked": isBooked,
-                                "facilities": facilities})
+                                "facilities": facilities,
+                                "percentageMatch": percentageMatch
+                                })
+
+    sortedRooms = sorted(findRooms, key= lambda x:x['percentageMatch'], reverse=True)
 
     return render(
         request,
         'find.html',
         context={   'bookingDate': bookingDate,
                     'displaydate': displaydate,
-                    'findRooms': findRooms
+                    'findRooms': sortedRooms
                 }
         ) 
 
@@ -112,11 +120,8 @@ def mybookings(request):
 
     bookedRooms = Booking.objects.filter(user = request.user)
 
-    pprint.pprint(bookedRooms)
-
     myBookings = []
     for booking in bookedRooms:
-        pprint.pprint(booking)
         displaydate = booking.date.strftime("%d/%m/%Y")
         myBookings.append({"bookDate": displaydate, "period": booking.period.periodName, "room": booking.room.roomName})
 

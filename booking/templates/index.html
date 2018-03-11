@@ -46,9 +46,9 @@
                 <div class="col-xs-9">
                 <div class="row">        
                 {% for f in facilities %}
-                <div class="col-xs-3 text-left">
+                <div class="col-xs-3 text-left"> 
                     <div class="checkbox">
-                        <label><input type="checkbox" name="facilities" value="{{f.facilityID}}"> {{f.facilityName}} </label>
+                        <label><input type="checkbox" name="facilities[]" value="{{f.facilityID}}"> {{f.facilityName}} </label>
                     </div>
                 </div>
                 {% if forloop.counter|divisibleby:4 %}

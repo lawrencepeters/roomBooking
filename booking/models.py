@@ -26,6 +26,9 @@ class RoomFacility(models.Model):
     room = models.ForeignKey(Room)
     facility = models.ForeignKey(Facility)
 
+    def __str__(self):
+        return '%s - %s' % (self.room.roomName, self.facility.facilityName)
+
 class Period(models.Model):
     periodID = models.AutoField(primary_key=True, auto_created=True)
     periodName = models.CharField(max_length=50)
@@ -43,6 +46,9 @@ class Booking(models.Model):
     room = models.ForeignKey(Room)
     timestamp = models.TimeField(auto_now_add=True)
 
+    def __str__(self):
+        return '%s - %s - %s - %s' % (self.date, self.user.username, self.period.periodName, self.room.roomName)
+
 class BookingHistory(models.Model):
     bookingHistoryID = models.AutoField(primary_key=True, auto_created=True)
     date = models.DateField(auto_now=False)
@@ -50,3 +56,6 @@ class BookingHistory(models.Model):
     period = Period
     room = Room
     timestamp = models.TimeField(auto_now_add=True)
+
+    def __str__(self):
+        return '%s - %s - %s - %s - %s' % (self.date, self.user.username, self.period.periodName, self.room.roomName, self.timestamp)

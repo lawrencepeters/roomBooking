@@ -60,7 +60,8 @@ def find(request):
     filterRooms = None
     filterPeriods = None    
 
-    bookingDate = datetime.datetime.strptime(request.POST['bookingdate'], "%d/%m/%Y").strftime("%Y-%m-%d")
+    #Convert date in request from a sting to a date
+    bookingDate = datetime.datetime.strptime(request.POST['bookingdate'], "%d/%m/%Y")
     requestedRoom = request.POST['roomName']
     requestedPeriod = request.POST['periods']
     requestedFacilities = request.POST.getlist('facilities[]') 
@@ -76,8 +77,6 @@ def find(request):
         filterPeriods = Period.objects.filter(periodID = requestedPeriod)
 
     bookedRooms = Booking.objects.filter(date = bookingDate).values('room', 'period')
-
-    displaydate = bookingDate[8:] + "/" + bookingDate[5:-3] + "/" + bookingDate[:4]
 
     findRooms = []
     for room in filterRooms:
@@ -97,8 +96,7 @@ def find(request):
             if len(requestedFacilities) > 0:
                 percentageMatch = int((facCount/len(requestedFacilities))*100)
 
-            findRooms.append({"bookDate": displaydate,
-                                "room": room,
+            findRooms.append({  "room": room,
                                 "period": period,
                                 "isBooked": isBooked,
                                 "facilities": facilities,
@@ -111,7 +109,6 @@ def find(request):
         request,
         'find.html',
         context={   'bookingDate': bookingDate,
-                    'displaydate': displaydate,
                     'findRooms': sortedRooms
                 }
         ) 
@@ -129,9 +126,8 @@ def mybookings(request):
 
 @login_required
 def bookARoom(request):
-    pprint.pprint(request.POST)
-
-    bookingDate = request.POST['bookDate']
+    
+    bookingDate = datetime.datetime.strptime(request.POST['bookingDate'], "%d/%m/%Y")
     period = Period.objects.filter(periodID = request.POST['periodID']).get()
     room = Room.objects.filter(roomID = request.POST['roomID']).get()
     b = Booking(date = bookingDate, room = room, period = period, user = request.user)

@@ -1,5 +1,6 @@
+<!--Carries over the previous HTML from base_generic.html-->
 {% extends "base_generic.html" %}
-
+<!--Fills the content block from base_generic.html-->
 {% block content %}
 <div class="container-fluid">
     <div class="panel panel-default">
@@ -14,6 +15,7 @@
                 </tr>
             </thead>
             <tbody>
+                <!--Iterates through the facilities in the facilityPopularity array-->
                 {% for facility in facilityPopularity %}
                     <tr>
                         <td>{{ facility.facilityName }}</td> 
@@ -21,6 +23,7 @@
                     </tr>
                 {% endfor %}
             </tbody>
+            <!--To declare spaces for the javascript search boxes-->
             <tfoot>
                 <tr>
                     <th>Facility</th>
@@ -32,7 +35,7 @@
         <div class="panel-footer"></div>
     </div>
 </div>
-
+<!--Turns current table into a datatable-->
 <script>
     $(document).ready(function() {   
         // Setup - add a text input to each footer cell

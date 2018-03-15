@@ -1,36 +1,39 @@
+<!--Carries over the previous HTML from base_generic.html-->
 {% extends "base_generic.html" %}
-
+<!--Fills the content block from base_generic.html-->
 {% block content %}
 
 <div class="container-fluid">
   <div class="panel panel-default">
-    <div class="panel-heading"><h2 class="text-center">{{ displaydate }}</h2></div>
+    <div class="panel-heading"><h2 class="text-center">{{ bookingDate|date }}</h2></div>
     <div class="panel-body">
 
         <table class="table table-hover" style="width:100%">
             <tr>
-                <th>Date</th>
                 <th>Room</th>
                 <th>Period</th>
                 <th>Facilities</th>
                 <th>Facilities Match</th>
                 <th>Book<th>
             </tr>
+            <!--Iterates through the rooms in the findRooms array-->
             {% for findRoom in findRooms %}
                 <tr>
-                    <td>{{ findRoom.bookDate }}</td> 
                     <td>{{ findRoom.room.roomName }}</td>
                     <td>{{ findRoom.period.periodName }}</td>
                     <td>
+                        <!--Iterates through the facilities in the current room in the findRooms array-->
                         {% for facility in findRoom.facilities %}
-                           <span class="label label-default">{{ facility.facilityName }}</span>
+                            <span class="label label-default">{{ facility.facilityName }}</span>
                         {% endfor %}    
                     </td> 
                     <td>{{ findRoom.percentageMatch }}%</td>
+                    <!--boolean value for if a room is booked or not-->
                     {% if findRoom.isBooked > 0 %}
                         <td><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></td>
                     {% else %}
-                        <td><a href="#" onclick="doBook(this, '{{ bookingDate }}', '{{ findRoom.room.roomID }}', '{{ findRoom.period.periodID }}' )"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></a></td>
+                        <!--TODO-->
+                        <td><a href="#" onclick="doBook(this, '{{ bookingDate|date }}', '{{ findRoom.room.roomID }}', '{{ findRoom.period.periodID }}' )"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></a></td>
                     {% endif %}
                 </tr>
             {% endfor %}
@@ -48,7 +51,7 @@ function doBook(aObj, bookingDate, roomID, periodID) {
     $.post("/booking/bookARoom",
     {
         csfrmiddlewaretoken: csrftoken,
-        bookDate: bookingDate,
+        bookingDate: bookingDate,
         periodID: periodID,
         roomID: roomID
     },

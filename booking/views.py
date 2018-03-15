@@ -2,6 +2,7 @@ from django.shortcuts import render
 import datetime
 import pprint
 from django.contrib.auth.models import User
+from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from operator import attrgetter
@@ -118,12 +119,7 @@ def find(request):
 @login_required
 def mybookings(request):
 
-    bookedRooms = Booking.objects.filter(user = request.user)
-
-    myBookings = []
-    for booking in bookedRooms:
-        displaydate = booking.date.strftime("%d/%m/%Y")
-        myBookings.append({"bookDate": displaydate, "period": booking.period.periodName, "room": booking.room.roomName})
+    myBookings = Booking.objects.filter(user = request.user)
 
     return render(
         request,
@@ -148,10 +144,53 @@ def bookARoom(request):
 def bookHistory(request):
     bookHistory = BookingHistory.objects.values()
 
-    pprint.pprint(bookHistory)
-    
     return render(
         request,
         'bookHistory.html',
         context = {'bookHistory': bookHistory}
+    )
+
+@login_required
+def roomPopularity(request):
+
+    rp = Booking.objects.values('room_id').annotate(numRooms=Count('room'))
+
+    roomPopularity = []
+    for p in rp:
+        r = Room.objects.filter(roomID = p['room_id']).get()
+        roomPopularity.append({"roomName": r.roomName, "numRooms": p['numRooms']})
+
+    sortedRoomPopularity = sorted(roomPopularity, key= lambda x:x['numRooms'], reverse=True)
+
+    return render(
+        request,
+        'roomPopularity.html',
+        context={'roomPopularity': sortedRoomPopularity}
+    )
+
+@login_required
+def facilityPopularity(request):
+
+    fp = Booking.objects.values()
+
+    fpDict = {}
+    for p in fp:
+        rf = RoomFacility.objects.filter(room_id = p['room_id']).values()
+        for f in rf:
+            fac = Facility.objects.filter(facilityID = f['facility_id']).get()
+            if fac.facilityName not in fpDict:
+                fpDict[fac.facilityName] = 0
+            fpDict[fac.facilityName] += 1
+
+    facilityPopularity = []
+    for f in fpDict:
+        facilityPopularity.append({'facilityName': f, 'facCount': fpDict[f]})
+    pprint.pprint(facilityPopularity)
+
+    sortedFacilityPopularity = sorted(facilityPopularity, key= lambda x:x['facCount'], reverse=True)
+
+    return render(
+        request,
+        'facilityPopularity.html',
+        context={'facilityPopularity': sortedFacilityPopularity}
     )

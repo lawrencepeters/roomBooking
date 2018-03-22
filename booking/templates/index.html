@@ -1,5 +1,6 @@
+<!--Carries over the previous HTML from base_generic.html-->
 {% extends "base_generic.html" %}
-
+<!--Fills the content block from base_generic.html-->
 {% block content %}
 <div class="container-fluid">
   <div class="panel panel-default">
@@ -20,6 +21,7 @@
             <div class="col-xs-4 text-center">
                 <select name="periods">
                     <option value="any">Any</option>
+                    <!--Iterates through the periods in the periods array-->
                     {% for period in periods %}
                         <option value="{{ period.periodID }}">{{ period.periodName }}</option>
                     {% endfor %}
@@ -28,6 +30,7 @@
             <div class="col-xs-4 text-center">
                 <select name="roomName">
                     <option value="any">Any</option>
+                    <!--Iterates through the rooms in the rooms array-->
                     {% for room in rooms %}
                         <option value="{{ room.roomID }}">{{ room.roomName }}</option>
                     {% endfor %}
@@ -44,13 +47,15 @@
             <div class="row">
                 <div class="col-xs-2"></div>
                 <div class="col-xs-9">
-                <div class="row">        
+                <div class="row">  
+                <!--Iterates through the facilities in the facilities array-->      
                 {% for f in facilities %}
                 <div class="col-xs-3 text-left"> 
                     <div class="checkbox">
                         <label><input type="checkbox" name="facilities[]" value="{{f.facilityID}}"> {{f.facilityName}} </label>
                     </div>
                 </div>
+                <!--uses modulo function to split the checkboxes into lines of 4-->
                 {% if forloop.counter|divisibleby:4 %}
                 </div>
                 <div class="row">        
@@ -70,7 +75,7 @@
 
 </div>
 </div>
-
+<!--js for the implementation and configuration of the daterange picker addon-->
 <script type="text/javascript">
     $(function() 
     {

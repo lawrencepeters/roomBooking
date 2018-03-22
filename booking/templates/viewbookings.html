@@ -1,7 +1,7 @@
+<!--Carries over the previous HTML from base_generic.html-->
 {% extends "base_generic.html" %}
-
+<!--Fills the content block from base_generic.html-->
 {% block content %}
-
 <div class="container-fluid">
     <div class="panel panel-default">
     <div class="panel-heading">
@@ -17,14 +17,18 @@
         <table class="table" style="width:100%">
             <tr>
                 <th>Room</th>
+                <!--Iterates through the items in the periods array-->
                 {% for period in periods %}
                     <th>{{ period.periodName }}</th>
                 {% endfor %}
             </tr>
+                <!--Iterates through the items in the allRooms array-->
                 {% for r in allRooms %}
                 <tr>
                     <td>{{ r.room.roomName }}</td>
+                    <!--Iterates through the items in the r.periods array-->
                     {% for p in r.periods %}
+                        <!--sets the glyphicon to a tick or cross based on iff the room is booked or not-->
                         {% if p.isBooked > 0 %}
                             <td><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></td>
                         {% else %}
@@ -39,7 +43,7 @@
     </div>
 </div>
 </div>
-
+<!--js for the implementation and configuration of the daterange picker addon-->
 <script type="text/javascript">
     $(document).ready(function()
     {

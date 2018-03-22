@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-# Register your models here.
+# Registration of the models declared in models.py
 
 from .models import Room
 from .models import Facility

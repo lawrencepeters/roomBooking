@@ -16,6 +16,7 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 
+#Declares url patterns
 urlpatterns = [
     url(r'^', include('booking.urls')),
     url(r'^booking/', include('booking.urls')),

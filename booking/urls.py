@@ -1,7 +1,8 @@
+#Import default django  modules
 from django.conf.urls import url
-
 from . import views
 
+#Declares web pages and links them to the relevant code in views.py
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),

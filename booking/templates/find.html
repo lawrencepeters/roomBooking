@@ -2,7 +2,6 @@
 {% extends "base_generic.html" %}
 <!--Fills the content block from base_generic.html-->
 {% block content %}
-
 <div class="container-fluid">
   <div class="panel panel-default">
     <div class="panel-heading"><h2 class="text-center">{{ bookingDate|date }}</h2></div>
@@ -32,7 +31,7 @@
                     {% if findRoom.isBooked > 0 %}
                         <td><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></td>
                     {% else %}
-                        <!--TODO-->
+                        <!--Performs doBook function passing through the variables: date, roomID, and the periodID-->
                         <td><a href="#" onclick="doBook(this, '{{ bookingDate|date }}', '{{ findRoom.room.roomID }}', '{{ findRoom.period.periodID }}' )"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></a></td>
                     {% endif %}
                 </tr>
@@ -44,6 +43,7 @@
     </div>
 </div>
 </div>
+<!--function to post through date, roomID, and periodID to the bookAroom page and return to this page-->
 <script>
 function doBook(aObj, bookingDate, roomID, periodID) {
 
@@ -55,6 +55,7 @@ function doBook(aObj, bookingDate, roomID, periodID) {
         periodID: periodID,
         roomID: roomID
     },
+    //change the tick to a cross when clicked on
     function(data, status){
         $(aObj).parent().html('<span class="glyphicon glyphicon-remove" aria-hidden="true">');
     });

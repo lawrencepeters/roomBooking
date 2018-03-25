@@ -3,10 +3,6 @@
 <!--Fills the content block from base_generic.html-->
 {% block content %}
 
-{% if form.errors %}
-<p>Your username and password didn't match. Please try again.</p>
-{% endif %}
-
 <style>
   body {
   padding-top: 40px;
@@ -60,6 +56,9 @@
         <label for="{{ form.password.for_label }}" class="sr-only">{{ form.password.label }}</label>
         <input name="{{form.password.html_name }}" type="password" id="{{ form.password.id_for_label }}" class="form-control" placeholder="Password" required>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        {% if form.errors %}
+          <p class="text-danger">Your username or password didn't match. Please try again.</p>
+        {% endif %}
       </form>
 
     </div> 

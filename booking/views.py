@@ -60,8 +60,9 @@ def find(request):
     bookingDate = datetime.datetime.strptime(request.POST['bookingdate'], "%d/%m/%Y")   # Converts the user requested date from a sting to a date
     requestedRoom = request.POST['roomName']    # Gets room
     requestedPeriod = request.POST['periods']   # Gets period
+    requestedCapacity = int('0' if request.POST['minCapacity'] == '' else request.POST['minCapacity']) # Gets capacity
     requestedFacilities = request.POST.getlist('facilities[]')  # Gets list of facilities
-
+ 
     if requestedRoom == 'any':
         filterRooms = Room.objects.all()
     else:
@@ -76,28 +77,30 @@ def find(request):
 
     findRooms = []
     for room in filterRooms:
-        allPeriods = []
-        facilities = []
-        facCount = 0
-        roomFacilities = RoomFacility.objects.filter(room = room)   # Filters facilities by user request
-        for roomFacility in roomFacilities:
-            fac = Facility.objects.filter(facilityID = roomFacility.facility_id)[:1].get()  #
-            if str(roomFacility.facility_id) in requestedFacilities:                        # Increases the facility count by 1 for each user requested facility 
-                facCount += 1                                                               #
-            facilities.append(fac)  # Appends the facility object to the facilities list                                                                                           
-        for period in filterPeriods:
-            isBooked = bookedRooms.filter(room = room).filter(period = period).count()  #isBooked equals 1 if period is free and 0 if booked
+        if room.roomCapacity >= requestedCapacity:
+            
+            allPeriods = []
+            facilities = []
+            facCount = 0
+            roomFacilities = RoomFacility.objects.filter(room = room)   # Filters facilities by user request
+            for roomFacility in roomFacilities:
+                fac = Facility.objects.filter(facilityID = roomFacility.facility_id)[:1].get()  #
+                if str(roomFacility.facility_id) in requestedFacilities:                        # Increases the facility count by 1 for each user requested facility 
+                    facCount += 1                                                               #
+                facilities.append(fac)  # Appends the facility object to the facilities list                                                                                           
+            for period in filterPeriods:
+                isBooked = bookedRooms.filter(room = room).filter(period = period).count()  #isBooked equals 1 if period is free and 0 if booked
 
-            percentageMatch = 0                                                 #
-            if len(requestedFacilities) > 0:                                    # Calculate the percentage match of the user requested facilities
-                percentageMatch = int((facCount/len(requestedFacilities))*100)  #
+                percentageMatch = 0                                                 #
+                if len(requestedFacilities) > 0:                                    # Calculate the percentage match of the user requested facilities
+                    percentageMatch = int((facCount/len(requestedFacilities))*100)  #
 
-            findRooms.append({  "room": room,
-                                "period": period,
-                                "isBooked": isBooked,
-                                "facilities": facilities,
-                                "percentageMatch": percentageMatch
-                                })
+                findRooms.append({  "room": room,
+                                    "period": period,
+                                    "isBooked": isBooked,
+                                    "facilities": facilities,
+                                    "percentageMatch": percentageMatch
+                                    })
 
     sortedRooms = sorted(findRooms, key= lambda x:x['percentageMatch'], reverse=True)   # Sort rooms by percentageMatch
 

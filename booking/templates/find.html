@@ -11,6 +11,7 @@
             <tr>
                 <th>Room</th>
                 <th>Period</th>
+                <th>Capacity</th>
                 <th>Facilities</th>
                 <th>Facilities Match</th>
                 <th>Book<th>
@@ -20,6 +21,7 @@
                 <tr>
                     <td>{{ findRoom.room.roomName }}</td>
                     <td>{{ findRoom.period.periodName }}</td>
+                    <td>{{ findRoom.room.roomCapacity }}</td>
                     <td>
                         <!--Iterates through the facilities in the current room in the findRooms array-->
                         {% for facility in findRoom.facilities %}
